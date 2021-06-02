@@ -4,6 +4,58 @@ const connection = require('./db-config');
 const app = express();
 const port = process.env.PORT || 5000;
 
+app.post('/annonce', (req, res) => {
+  const {
+    id,
+    district,
+    adress,
+    city,
+    furnished,
+    rent,
+    surface,
+    animals,
+    title,
+    category,
+    type,
+    energyClass,
+    rooms,
+    describe,
+    idUser,
+  } = req.body;
+  connection.query(
+    'INSERT INTO users (id, district, adress, city, furnished, rent, surface, animals, title, category, type, energyClass,rooms, describe,id_user) VALUES (?, ?, ?,?, ?, ?,?, ?, ?,?, ?, ?,?,?)',
+    [
+      id,
+      district,
+      adress,
+      city,
+      furnished,
+      rent,
+      surface,
+      animals,
+      title,
+      category,
+      type,
+      energyClass,
+      rooms,
+      describe,
+      idUser,
+    ],
+    (err) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error saving the user');
+      } else {
+        res.status(201).send('User successfully saved');
+      }
+    }
+  );
+});
+
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
+
 connection.connect((err) => {
   if (err) {
     console.error(`error connecting: ${err.stack}`);
