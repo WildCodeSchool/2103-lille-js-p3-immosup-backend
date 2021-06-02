@@ -31,7 +31,7 @@ app.post('/annonce', async (req, res) => {
     idUser,
   } = req.body;
   await connection.query(
-    'INSERT INTO users (id, district, adress, city, furnished, rent, surface, animals, title, category, type, energyClass,rooms, describe,id_user) VALUES (?, ?, ?,?, ?, ?,?, ?, ?,?, ?, ?,?,?)',
+    'INSERT INTO accomodations (id, district, adress, city, furnished, rent, surface, animals, title, category, type, energyClass,rooms, describe,id_user) VALUES (?, ?, ?,?, ?, ?,?, ?, ?,?, ?, ?,?,?)',
     [
       id,
       district,
@@ -63,7 +63,7 @@ app.post('/annonce', async (req, res) => {
 app.get('/annonce/:id', async (req, res) => {
   const annId = req.params.id;
   await connection.query(
-    'SELECT * FROM annonce WHERE id = ?',
+    'SELECT * FROM accomodations WHERE id = ?',
     [annId],
     (err, results) => {
       if (err) {
@@ -78,7 +78,7 @@ app.put('/annonce/:id', async (req, res) => {
   const annId = req.params.id;
 
   await connection.query(
-    'SELECT * FROM annonce WHERE id =?',
+    'SELECT * FROM accomodations WHERE id =?',
     [annId],
     async (err, selectResults) => {
       if (err) {
@@ -105,6 +105,21 @@ app.put('/annonce/:id', async (req, res) => {
           res.status(404).send(`Movie with id ${annId} not found`);
         }
       }
+    }
+  );
+});
+
+app.delete('/annonce/:id', (req, res) => {
+  const annId = req.params.id;
+  connection.query(
+    'DELETE FROM accomodations WHERE id = ?',
+    [annId],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+        res.status(500).send('Error deleting an annonce');
+      } else if (result.affectedRows) res.status(200).send('Annonce deleted!');
+      else res.status(404).send('Annonce not found');
     }
   );
 });
