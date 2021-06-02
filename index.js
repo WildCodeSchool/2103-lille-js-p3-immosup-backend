@@ -26,7 +26,7 @@ app.post('/annonce', (req, res) => {
     surface,
     animals,
     title,
-    category,
+    ges,
     type,
     energyClass,
     rooms,
@@ -34,7 +34,7 @@ app.post('/annonce', (req, res) => {
     idUser,
   } = req.body;
   connection.query(
-    'INSERT INTO accomodations (district, address, city, furnished, rent, surface, animals, title, category, type, energyClass,rooms, describe,idUser) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    'INSERT INTO accomodations (district, address, city, furnished, rent, surface, animals, title, idUser, rooms, ges, energyClass, accomodations.type, accomodations.describe) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);',
     [
       district,
       address,
@@ -44,12 +44,12 @@ app.post('/annonce', (req, res) => {
       surface,
       animals,
       title,
-      category,
-      type,
-      energyClass,
-      rooms,
-      describe,
       idUser,
+      rooms,
+      ges,
+      energyClass,
+      type,
+      describe,
     ],
     (err) => {
       if (err) {
@@ -78,13 +78,13 @@ app.get('/annonce/:id', (req, res) => {
   );
 });
 
-app.put('/annonce/:id', async (req, res) => {
+app.put('/annonce/:id', (req, res) => {
   const annId = req.params.id;
 
-  await connection.query(
+  connection.query(
     'SELECT * FROM accomodations WHERE id =?',
     [annId],
-    async (err, selectResults) => {
+    (err, selectResults) => {
       if (err) {
         console.log(err);
         res.status(500).send('Error updating annonce');
@@ -92,8 +92,8 @@ app.put('/annonce/:id', async (req, res) => {
         const annFromDb = selectResults[0];
         if (annFromDb) {
           const annPropToUpdate = req.body;
-          await connection.query(
-            'UPDATE annonce SET ? WHERE id=?',
+          connection.query(
+            'UPDATE accomodations SET ? WHERE id=?',
             [annPropToUpdate, annId],
             (error) => {
               if (error) {
