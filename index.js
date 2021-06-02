@@ -1,8 +1,9 @@
 const express = require('express');
+const cors = require('cors');
 const connection = require('./db-config');
 // const bodyParser = require('body-parser');
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5050;
 
 connection.connect((err) => {
   if (err) {
@@ -12,11 +13,13 @@ connection.connect((err) => {
   }
 });
 
-app.post('/annonce', async (req, res) => {
+app.use(express.json());
+app.use(cors());
+
+app.post('/annonce', (req, res) => {
   const {
-    id,
     district,
-    adress,
+    address,
     city,
     furnished,
     rent,
@@ -30,12 +33,11 @@ app.post('/annonce', async (req, res) => {
     describe,
     idUser,
   } = req.body;
-  await connection.query(
-    'INSERT INTO accomodations (id, district, adress, city, furnished, rent, surface, animals, title, category, type, energyClass,rooms, describe,id_user) VALUES (?, ?, ?,?, ?, ?,?, ?, ?,?, ?, ?,?,?)',
+  connection.query(
+    'INSERT INTO accomodations (district, address, city, furnished, rent, surface, animals, title, category, type, energyClass,rooms, describe,idUser) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
     [
-      id,
       district,
-      adress,
+      address,
       city,
       furnished,
       rent,
@@ -60,16 +62,18 @@ app.post('/annonce', async (req, res) => {
   );
 });
 
-app.get('/annonce/:id', async (req, res) => {
+app.get('/annonce/:id', (req, res) => {
   const annId = req.params.id;
-  await connection.query(
+  connection.query(
     'SELECT * FROM accomodations WHERE id = ?',
     [annId],
     (err, results) => {
       if (err) {
         res.status(500).send('Error retrieving annonce from database');
-      } else if (results.length) res.json(results[0]);
-      else res.status(404).send('Annonce not found');
+      } else if (results.length) {
+        console.log(results);
+        res.json(results[0]);
+      } else res.status(404).send('Annonce not found');
     }
   );
 });
