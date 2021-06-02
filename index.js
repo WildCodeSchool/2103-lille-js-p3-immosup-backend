@@ -2,7 +2,7 @@ const express = require('express');
 const connection = require('./db-config');
 // const bodyParser = require('body-parser');
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 
 connection.connect((err) => {
   if (err) {
@@ -12,7 +12,7 @@ connection.connect((err) => {
   }
 });
 
-app.post('/annonce', (req, res) => {
+app.post('/annonce', async (req, res) => {
   const {
     id,
     district,
@@ -30,7 +30,7 @@ app.post('/annonce', (req, res) => {
     describe,
     idUser,
   } = req.body;
-  connection.query(
+  await connection.query(
     'INSERT INTO users (id, district, adress, city, furnished, rent, surface, animals, title, category, type, energyClass,rooms, describe,id_user) VALUES (?, ?, ?,?, ?, ?,?, ?, ?,?, ?, ?,?,?)',
     [
       id,
@@ -60,9 +60,9 @@ app.post('/annonce', (req, res) => {
   );
 });
 
-app.get('/annonce/:id', (req, res) => {
+app.get('/annonce/:id', async (req, res) => {
   const annId = req.params.id;
-  connection.query(
+  await connection.query(
     'SELECT * FROM annonce WHERE id = ?',
     [annId],
     (err, results) => {
@@ -74,13 +74,13 @@ app.get('/annonce/:id', (req, res) => {
   );
 });
 
-app.put('/annonce/:id', (req, res) => {
+app.put('/annonce/:id', async (req, res) => {
   const annId = req.params.id;
 
-  connection.query(
+  await connection.query(
     'SELECT * FROM annonce WHERE id =?',
     [annId],
-    (err, selectResults) => {
+    async (err, selectResults) => {
       if (err) {
         console.log(err);
         res.status(500).send('Error updating annonce');
@@ -88,7 +88,7 @@ app.put('/annonce/:id', (req, res) => {
         const annFromDb = selectResults[0];
         if (annFromDb) {
           const annPropToUpdate = req.body;
-          connection.query(
+          await connection.query(
             'UPDATE annonce SET ? WHERE id=?',
             [annPropToUpdate, annId],
             (error) => {
