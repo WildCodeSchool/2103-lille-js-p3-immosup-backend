@@ -1,15 +1,6 @@
 const usersRouter = require('express').Router();
 const User = require('../models/users');
 
-usersRouter.get('/', async (req, res) => {
-  try {
-    const [user] = await User.getAll();
-    res.status(200).json(user);
-  } catch {
-    res.status(500).send('Error retrieving users from database');
-  }
-});
-
 usersRouter.get('/:id', async (req, res) => {
   try {
     const [[user]] = await User.getOne(req.params.id);

@@ -1,12 +1,6 @@
 const Joi = require('joi');
 const db = require('../conf');
 
-const getAll = () => {
-  const sql =
-    'SELECT id, name, firstname, email, credits, city, gender, budget, age, animals, aboutme, hobbies, telephone FROM users';
-  return db.query(sql);
-};
-
 const getOne = (id) => {
   const sql =
     'SELECT users.id, name, firstname, email, credits, city, gender, budget, age, animals, aboutme, hobbies, telephone, photos.url FROM users JOIN photos ON photos.idUser = users.id WHERE users.id = ?';
@@ -89,7 +83,6 @@ const validateUpdate = (data) => {
 };
 
 module.exports = {
-  getAll,
   getOne,
   create,
   validateCreation,
