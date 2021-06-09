@@ -47,11 +47,22 @@ usersRouter.put('/:id', async (req, res) => {
     res.status(422).json({ validationErrors: error.details });
   } else {
     try {
-      const [existingUser] = await User.getOne(req.params.id);
-      const [result] = await User.update(req.params.id, req.body);
-      console.log(result);
+      const [[existingUser]] = await User.getOne(req.params.id);
+      if (!existingUser) {
+        // ENVOYER UNE ERREUR DANS LE CATCH et fait un res.. :
+        // return res.status(404).send(`User ${req.params.id} doesn't exist`);
+      }
+      (() => {
+        if (!existingUser) {
+          throw new Error('rip');
+        }
+      })();
+      await User.update(req.params.id, req.body);
       res.json({ ...existingUser, ...req.body });
     } catch (err) {
+      if (err === 'rip') {
+        res.status(404).send(err);
+      }
       res.status(400).send(err);
     }
   }

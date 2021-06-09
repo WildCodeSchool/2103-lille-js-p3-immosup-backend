@@ -48,7 +48,8 @@ const create = ({
 };
 
 const update = (id, newAttributes) => {
-  return db.query('Update users SET ? WHERE id = ?', [newAttributes, id]);
+  const sql = 'Update users SET ? WHERE id = ?';
+  return db.query(sql, [newAttributes, id]);
 };
 
 const validateCreation = (data) => {
