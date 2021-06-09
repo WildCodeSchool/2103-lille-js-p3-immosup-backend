@@ -1,9 +1,10 @@
+const Joi = require('joi');
 const express = require('express');
 const cors = require('cors');
 const connection = require('./db-config');
 // const bodyParser = require('body-parser');
 const app = express();
-const port = process.env.PORT || 5050;
+const port = process.env.PORT || 5002;
 
 connection.connect((err) => {
   if (err) {
@@ -27,13 +28,15 @@ app.post('/annonce', (req, res) => {
     animals,
     title,
     ges,
-    type,
+    property,
     energyClass,
     rooms,
-    describe,
+    description,
     idUser,
   } = req.body;
-  connection.query(
+  const db = connection.promise();
+  let validationErrors = null;
+  db.query(
     'INSERT INTO accomodations (district, address, city, furnished, rent, surface, animals, title, idUser, rooms, ges, energyClass, accomodations.type, accomodations.describe) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);',
     [
       district,
@@ -48,18 +51,76 @@ app.post('/annonce', (req, res) => {
       rooms,
       ges,
       energyClass,
-      type,
-      describe,
-    ],
-    (err) => {
-      if (err) {
-        console.error(err);
-        res.status(500).send('Error saving the user');
-      } else {
-        res.status(201).send('User successfully saved');
-      }
-    }
-  );
+      property,
+      description,
+    ]
+  )
+    .then(([result]) => {
+      if (result[0]) return Promise.reject(new Error('Something went wrong'));
+      validationErrors = Joi.object({
+        district: Joi.string().max(32).required(),
+        adress: Joi.string().max(64).required(),
+        city: Joi.string().max(32).required(),
+        furnished: Joi.boolean().default(false),
+        rent: Joi.number().integer().min(1).max(11),
+        animals: Joi.boolean().default(false),
+        title: Joi.string().max(45).required(),
+        rooms: Joi.number().integer().min(1).max(11),
+        energyClass: Joi.string().max(1).required(),
+        description: Joi.string().max(1000).required(),
+        property: Joi.string().max(45).required(),
+        idUser: Joi.number().integer.min(1).max(11),
+        ges: Joi.string().max(1),
+        surface: Joi.number().min(1).max(11),
+      }).validate(req.body, { abortEarly: false }).error;
+      if (validationErrors)
+        return Promise.reject(new Error('Something went wrong'));
+      return db.query(
+        'INSERT INTO accomodations (district, address, city, furnished, rent, surface, animals, title, idUser, rooms, ges, energyClass, property, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);',
+        [
+          district,
+          address,
+          city,
+          furnished,
+          rent,
+          surface,
+          animals,
+          title,
+          idUser,
+          rooms,
+          ges,
+          energyClass,
+          property,
+          description,
+        ]
+      );
+    })
+    .then(([{ insertId }]) => {
+      res.status(201).json({
+        id: insertId,
+        district,
+        address,
+        city,
+        furnished,
+        rent,
+        surface,
+        animals,
+        title,
+        idUser,
+        rooms,
+        ges,
+        energyClass,
+        property,
+        description,
+      });
+    })
+    .catch((err) => {
+      console.error(err);
+      if (err === 'Error') res.status(409).json({ message: 'Invalid data' });
+      else if (err === 'INVALID_DATA')
+        res.status(422).json({ validationErrors });
+      else res.status(500).send('Invalid data');
+    });
 });
 
 app.get('/annonce/:id', (req, res) => {
