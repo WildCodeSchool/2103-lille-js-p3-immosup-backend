@@ -1,6 +1,5 @@
 const express = require('express');
 const { setupRoutes } = require('./routes');
-// const db = require('./conf');
 
 const app = express();
 

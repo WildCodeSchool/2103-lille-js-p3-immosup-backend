@@ -10,4 +10,18 @@ usersRouter.get('/', async (req, res) => {
   }
 });
 
+usersRouter.get('/:id', async (req, res) => {
+  try {
+    const [user] = await User.getOne(req.params.id);
+
+    if (user.length > 0) {
+      res.status(200).send(user);
+    } else {
+      res.status(404).send('User not found');
+    }
+  } catch (err) {
+    res.status(400).send(err);
+  }
+});
+
 module.exports = usersRouter;
