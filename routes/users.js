@@ -12,12 +12,12 @@ usersRouter.get('/', async (req, res) => {
 
 usersRouter.get('/:id', async (req, res) => {
   try {
-    const [user] = await User.getOne(req.params.id);
+    const [[user]] = await User.getOne(req.params.id);
 
-    if (user.length > 0) {
-      res.status(200).json(user);
-    } else {
+    if (!user) {
       res.status(404).send(`User ${req.params.id} not found`);
+    } else {
+      res.status(200).json(user);
     }
   } catch (err) {
     res.status(500).send('Error retrieving users from database');
@@ -48,15 +48,6 @@ usersRouter.put('/:id', async (req, res) => {
   } else {
     try {
       const [[existingUser]] = await User.getOne(req.params.id);
-      if (!existingUser) {
-        // ENVOYER UNE ERREUR DANS LE CATCH et fait un res.. :
-        // return res.status(404).send(`User ${req.params.id} doesn't exist`);
-      }
-      (() => {
-        if (!existingUser) {
-          throw new Error('rip');
-        }
-      })();
       await User.update(req.params.id, req.body);
       res.json({ ...existingUser, ...req.body });
     } catch (err) {
