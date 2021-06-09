@@ -25,7 +25,7 @@ usersRouter.get('/:id', async (req, res) => {
 });
 
 usersRouter.post('/', async (req, res) => {
-  const error = User.validate(req.body, true);
+  const error = User.validateCreation(req.body);
   if (error) {
     res.status(422).json({ validationErrors: error.details });
   } else {
@@ -36,7 +36,23 @@ usersRouter.post('/', async (req, res) => {
         ...req.body,
       });
     } catch (err) {
-      res.status(500).send('Error saving the user');
+      res.status(500).send(err);
+    }
+  }
+});
+
+usersRouter.put('/:id', async (req, res) => {
+  const error = User.validateUpdate(req.body);
+  if (error) {
+    res.status(422).json({ validationErrors: error.details });
+  } else {
+    try {
+      const [existingUser] = await User.getOne(req.params.id);
+      const [result] = await User.update(req.params.id, req.body);
+      console.log(result);
+      res.json({ ...existingUser, ...req.body });
+    } catch (err) {
+      res.status(400).send(err);
     }
   }
 });

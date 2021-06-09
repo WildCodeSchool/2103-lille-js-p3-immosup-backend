@@ -47,22 +47,43 @@ const create = ({
   ]);
 };
 
-const validate = (data, forCreation = true) => {
-  const presence = forCreation ? 'required' : 'optional';
+const update = (id, newAttributes) => {
+  return db.query('Update users SET ? WHERE id = ?', [newAttributes, id]);
+};
+
+const validateCreation = (data) => {
   return Joi.object({
-    name: Joi.string().max(64).presence(presence),
-    firstname: Joi.string().max(32).presence(presence),
-    email: Joi.string().max(64).email().presence(presence),
-    password: Joi.string().max(64).presence(presence),
-    credits: Joi.number().integer().min(0).presence(presence),
-    city: Joi.string().max(32).presence(presence),
-    gender: Joi.boolean().presence(presence),
-    budget: Joi.number().integer().min(0).presence(presence),
-    age: Joi.number().integer().min(0).presence(presence),
-    animals: Joi.boolean().presence(presence),
-    aboutme: Joi.string().max(256).presence(presence),
-    hobbies: Joi.string().max(256).presence(presence),
-    telephone: Joi.string().max(20).presence(presence),
+    name: Joi.string().max(64).required(),
+    firstname: Joi.string().max(32).required(),
+    email: Joi.string().max(64).email().required(),
+    password: Joi.string().max(64).required(),
+    credits: Joi.number().integer().min(0).required(),
+    city: Joi.string().max(32).required(),
+    gender: Joi.boolean().required(),
+    budget: Joi.number().integer().min(0).required(),
+    age: Joi.number().integer().min(0).required(),
+    animals: Joi.boolean().required(),
+    aboutme: Joi.string().max(256).required(),
+    hobbies: Joi.string().max(256).required(),
+    telephone: Joi.string().max(20),
+  }).validate(data, { abortEarly: false }).error;
+};
+
+const validateUpdate = (data) => {
+  return Joi.object({
+    name: Joi.string().max(64),
+    firstname: Joi.string().max(32),
+    email: Joi.string().max(64).email(),
+    password: Joi.string().max(64),
+    credits: Joi.number().integer().min(0),
+    city: Joi.string().max(32),
+    gender: Joi.boolean(),
+    budget: Joi.number().integer().min(0),
+    age: Joi.number().integer().min(0),
+    animals: Joi.boolean(),
+    aboutme: Joi.string().max(256),
+    hobbies: Joi.string().max(256),
+    telephone: Joi.string().max(20),
   }).validate(data, { abortEarly: false }).error;
 };
 
@@ -70,5 +91,7 @@ module.exports = {
   getAll,
   getOne,
   create,
-  validate,
+  validateCreation,
+  validateUpdate,
+  update,
 };
