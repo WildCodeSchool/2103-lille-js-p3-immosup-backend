@@ -51,6 +51,10 @@ const update = (id, newAttributes) => {
   return db.query('Update users SET ? WHERE id = ?', [newAttributes, id]);
 };
 
+const destroy = (id) => {
+  return db.query('Delete FROM users Where id = ?', [id]);
+};
+
 const validateCreation = (data) => {
   return Joi.object({
     name: Joi.string().max(64).required(),
@@ -94,4 +98,5 @@ module.exports = {
   validateCreation,
   validateUpdate,
   update,
+  destroy,
 };
