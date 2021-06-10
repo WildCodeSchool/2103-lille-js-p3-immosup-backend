@@ -42,9 +42,6 @@ usersRouter.put('/:id', async (req, res) => {
       await User.update(req.params.id, req.body);
       res.json({ ...existingUser, ...req.body });
     } catch (err) {
-      if (err === 'rip') {
-        res.status(404).send(err);
-      }
       res.status(400).send(err);
     }
   }
