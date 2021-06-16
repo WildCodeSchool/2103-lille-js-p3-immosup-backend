@@ -2,22 +2,6 @@ const annonceRouter = require('express').Router();
 const db = require('../conf');
 const Ann = require('../models/annonce');
 
-/* annonceRouter.get('/:id', (req, res) => {
-  const annId = req.params.id;
-  console.log('toto');
-  db.query(
-    'SELECT * FROM accomodations WHERE id = ?',
-    [annId],
-    (err, results) => {
-      if (err) {
-        res.status(500).send('Error retrieving annonce from database');
-      } else if (results.length) {
-        console.log(results);
-        res.json(results[0]);
-      } else res.status(404).send('Annonce not found');
-    }
-  );
-}); */
 annonceRouter.get('/', async (req, res) => {
   const [results] = await Ann.getAll();
   res.json(results);
