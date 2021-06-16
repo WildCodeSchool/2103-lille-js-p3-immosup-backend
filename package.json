@@ -2,15 +2,15 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "nodemon app.js",
     "lint": "eslint \"./**/*.js\" --fix .",
     "prettify": "prettier --write .",
-    "dev": "nodemon index.js"
+    "dev": "nodemon app.js"
   },
   "eslintConfig": {
     "extends": "airbnb-base",
