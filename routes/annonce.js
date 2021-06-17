@@ -63,7 +63,7 @@ annonceRouter.delete('/:id', async (req, res) => {
     if (!results) {
       res.status(404).send(`Accomodation not found`);
     } else {
-      res.status(200).json(results).send('Annonce deleted!');
+      res.status(200).json(results);
     }
   } catch (err) {
     res.status(500).send('Error deleting an user');
