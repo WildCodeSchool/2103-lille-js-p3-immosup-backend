@@ -1,23 +1,7 @@
 const annonceRouter = require('express').Router();
-const db = require('../conf');
+const { db } = require('../conf');
 const Ann = require('../models/annonce');
 
-/* annonceRouter.get('/:id', (req, res) => {
-  const annId = req.params.id;
-  console.log('toto');
-  db.query(
-    'SELECT * FROM accomodations WHERE id = ?',
-    [annId],
-    (err, results) => {
-      if (err) {
-        res.status(500).send('Error retrieving annonce from database');
-      } else if (results.length) {
-        console.log(results);
-        res.json(results[0]);
-      } else res.status(404).send('Annonce not found');
-    }
-  );
-}); */
 annonceRouter.get('/', async (req, res) => {
   const [results] = await Ann.getAll();
   res.json(results);
@@ -43,7 +27,7 @@ annonceRouter.post('/', async (req, res) => {
     res.status(422).json({ validationErrors: error.details });
   } else {
     try {
-      const [results] = await Ann.create(req.body);
+      const results = await Ann.create(req.body);
       res.status(201).json({
         id: results.insertId,
         ...req.body,
@@ -75,13 +59,10 @@ annonceRouter.delete('/:id', async (req, res) => {
   const sqlValues = [id];
   const sql = 'DELETE FROM accomodations WHERE id = ?';
   try {
-    const [results] = await db.query(sql, sqlValues);
-    if (!results) {
-      res.status(404).send(`Accomodation not found`);
-    } else {
-      res.status(200).json(results).send('Annonce deleted!');
-    }
+    await db.query(sql, sqlValues);
+    res.status(200).send('Annonce deleted!');
   } catch (err) {
+    console.log(err);
     res.status(500).send('Error deleting an user');
   }
 });
