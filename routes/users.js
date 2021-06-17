@@ -1,6 +1,10 @@
 const usersRouter = require('express').Router();
 const User = require('../models/users');
 
+usersRouter.get('/', async (req, res) => {
+  res.send('OK');
+});
+
 usersRouter.get('/:id', async (req, res) => {
   try {
     const [[user]] = await User.getOne(req.params.id);
