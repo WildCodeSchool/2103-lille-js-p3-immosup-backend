@@ -1,7 +1,6 @@
 const favoritesRouter = require('express').Router();
 const favorite = require('../models/favorites');
 
-/*
 favoritesRouter.get('/', async (req, res) => {
   try {
     const [fav] = await favorite.getFav(req.query);
@@ -15,7 +14,8 @@ favoritesRouter.get('/', async (req, res) => {
     res.status(500).send('Error retrieving users from database');
   }
 });
-*/
+
+/*
 favoritesRouter.get('/:id', async (req, res) => {
   try {
     const [fav] = await favorite.getFav(req.params.id);
@@ -30,5 +30,6 @@ favoritesRouter.get('/:id', async (req, res) => {
     console.log(err);
   }
 });
+*/
 
 module.exports = favoritesRouter;
