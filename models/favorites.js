@@ -1,6 +1,6 @@
 const db = require('../conf');
 
-const getFav = () => {
+const getFav = (idUser) => {
   const sql = `
   select accomodations.*, (
 		select url from photos where idAccomodation=accomodations.id limit 1
@@ -10,12 +10,12 @@ from
     join accomodations on favorites.idAccomodation=accomodations.id
     join photos on photos.idAccomodation=accomodations.id
 where
-	favorites.idUser=1
+	favorites.idUser= ?
 group by id
 
   `;
 
-  return db.query(sql);
+  return db.query(sql, [idUser]);
 };
 
 module.exports = {
