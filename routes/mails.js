@@ -3,13 +3,12 @@ const { mailer } = require('../conf');
 
 mailsRouters.post('/', (req, res) => {
   const { email, message } = req.body;
-  const content = `email: ${email} \n message: ${message} `;
 
   const mail = {
-    from: 'mrtine@gmail.com',
-    to: email,
-    message,
-    text: content,
+    from: 'wild.test@outlook.fr' /* email de l expediteur */,
+    to: email /* email du recepteur */,
+    subject: '',
+    text: message,
   };
 
   console.log(mailer);
