@@ -1,5 +1,5 @@
 const annonceRouter = require('express').Router();
-const db = require('../conf');
+const { db } = require('../conf');
 const Ann = require('../models/annonce');
 
 annonceRouter.get('/', async (req, res) => {
@@ -27,7 +27,7 @@ annonceRouter.post('/', async (req, res) => {
     res.status(422).json({ validationErrors: error.details });
   } else {
     try {
-      const [results] = await Ann.create(req.body);
+      const results = await Ann.create(req.body);
       res.status(201).json({
         id: results.insertId,
         ...req.body,

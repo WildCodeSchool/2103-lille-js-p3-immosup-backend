@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const db = require('../conf');
+const { db } = require('../conf');
 
 const getAll = () => {
   const sql = 'SELECT * FROM accomodations';
