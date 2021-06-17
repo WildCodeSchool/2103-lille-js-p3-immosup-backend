@@ -5,13 +5,11 @@ mailsRouters.post('/', (req, res) => {
   const { email, message } = req.body;
 
   const mail = {
-    from: 'wild.test@outlook.fr' /* email de l expediteur */,
+    from: 'wild.test@outlook.fr',
     to: email /* email du recepteur */,
     subject: '',
     text: message,
   };
-
-  console.log(mailer);
 
   mailer.sendMail(mail, (err) => {
     if (err) {
