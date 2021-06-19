@@ -1,48 +1,61 @@
 const usersRouter = require('express').Router();
 const User = require('../models/users');
 
-usersRouter.get('/:id', async (req, res) => {
+usersRouter.get('/', async (req, res) => {
   try {
-    const [[user]] = await User.getOne(req.params.id);
-
-    if (!user) {
-      res.status(404).send(`User ${req.params.id} not found`);
+    let result = null;
+    if (req.query.id) {
+      [[result]] = await User.getOneId(req.query.id);
+    } else if (req.query.email) {
+      [[result]] = await User.getOneEmail(req.query.email);
     } else {
-      res.status(200).json(user);
+      [result] = await User.getAll();
     }
+    if (!result) res.status(404).send('User(s) not found');
+    else res.status(200).send(result);
   } catch (err) {
-    res.status(500).send('Error retrieving users from database');
+    res.status(500).send('Error retrieving user(s) from database');
   }
 });
 
 usersRouter.post('/', async (req, res) => {
-  const error = User.validateCreation(req.body);
-  if (error) {
-    res.status(422).json({ validationErrors: error.details });
-  } else {
-    try {
-      const [result] = await User.create(req.body);
-      res.status(201).json({
-        id: result.insertId,
-        ...req.body,
-      });
-    } catch (err) {
-      res.status(500).send(err);
+  try {
+    const [result] = await User.create(req.body);
+    res.status(201).send({
+      id: result.insertId,
+      ...req.body,
+    });
+  } catch (err) {
+    if (err.code === 'ER_DUP_ENTRY') {
+      res.status(409).send('This user already exists');
+    } else if (err.code === 'ER_BAD_NULL_ERROR') {
+      res.status(422).send('Please fill all fields');
+    } else {
+      res.status(500).send('Error creating user from database');
     }
   }
 });
 
 usersRouter.put('/:id', async (req, res) => {
-  const error = User.validateUpdate(req.body);
-  if (error) {
-    res.status(422).json({ validationErrors: error.details });
-  } else {
-    try {
-      const [[existingUser]] = await User.getOne(req.params.id);
+  try {
+    const [[existingUser]] = await User.getOneId(req.params.id);
+    if (!existingUser) {
+      res.status(404).send('User not found');
+    } else {
       await User.update(req.params.id, req.body);
-      res.json({ ...existingUser, ...req.body });
-    } catch (err) {
-      res.status(400).send(err);
+      res.status(200).send({
+        ...existingUser,
+        ...req.body,
+      });
+    }
+  } catch (err) {
+    if (
+      err.code === 'ER_BAD_FIELD_ERROR' ||
+      err.code === 'ER_TRUNCATED_WRONG_VALUE_FOR_FIELD'
+    ) {
+      res.status(422).send(err.sqlMessage);
+    } else {
+      res.status(500).send('Error updating user from database');
     }
   }
 });
