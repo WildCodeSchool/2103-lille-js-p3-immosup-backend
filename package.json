@@ -32,6 +32,7 @@
     "express": "^4.17.1",
     "express-joi-validation": "^5.0.0",
     "express-promise-router": "^4.1.0",
+    "i": "^0.3.6",
     "joi": "^17.4.0",
     "mysql2": "^2.2.5",
     "nodemailer": "^6.6.1",
