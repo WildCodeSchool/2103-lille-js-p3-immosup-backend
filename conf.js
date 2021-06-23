@@ -31,7 +31,7 @@ transporter.verify(function (error) {
  */
 module.exports = {
   db,
-  jwtRounds: parseInt(JWT_SALTROUNDS, 10),
+  jwtRounds: parseInt(JWT_SALTROUNDS, 7),
   jwtSecret: JWT_SECRET,
   /* mailer: transporter, */
 };

@@ -1,9 +1,9 @@
 const Joi = require('joi');
-const db = require('../conf');
+const { db } = require('../conf');
 
 const getOne = (id) => {
   const sql =
-    'SELECT users.id, name, firstname, email, credits, city, gender, budget, age, animals, aboutme, hobbies, telephone, photos.url FROM users JOIN photos ON photos.idUser = users.id WHERE users.id = ?';
+    'SELECT * FROM users JOIN photos ON photos.idUser = users.id WHERE users.id = ?';
   return db.query(sql, [id]);
 };
 
