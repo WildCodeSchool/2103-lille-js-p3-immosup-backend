@@ -1,11 +1,11 @@
 const express = require('express');
-
+const cors = require('cors');
 const { setupRoutes } = require('./routes');
 
 const app = express();
 
 const port = process.env.PORT || 5050;
-
+app.use(cors());
 app.use(express.json());
 setupRoutes(app);
 
