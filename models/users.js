@@ -1,4 +1,4 @@
-const db = require('../conf');
+const { db } = require('../conf');
 
 const getOneId = (id) => {
   return db.query(

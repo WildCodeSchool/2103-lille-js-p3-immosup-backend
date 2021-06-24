@@ -1,4 +1,4 @@
-const db = require('../conf');
+const { db } = require('../conf');
 
 const getFav = (id) => {
   const sql = `
