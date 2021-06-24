@@ -9,6 +9,7 @@ const db = mysql.createPool({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
 });
+
 const transporter = nodemailer.createTransport({
   service: process.env.MAIL_SERVICE,
   port: 587,
