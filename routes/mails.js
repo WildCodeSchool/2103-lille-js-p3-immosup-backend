@@ -7,7 +7,7 @@ mailsRouters.post('/', (req, res) => {
 
   const mail = {
     from: process.env.MAIL_USER,
-    to: process.env.RECEIVER_MAIL /* email du recepteur */,
+    to: process.env.RECEIVER_MAIL,
     subject: 'contact ImmoSup',
     html: `<p>email: ${email}</p><p>name: ${firstName}</p><p>message: ${message}</p>`,
   };
