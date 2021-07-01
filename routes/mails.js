@@ -1,25 +1,22 @@
 const mailsRouters = require('express').Router();
+
 const { mailer } = require('../conf');
 
 mailsRouters.post('/', (req, res) => {
-  const { email, message } = req.body;
+  const { email, firstName, message } = req.body;
 
   const mail = {
     from: process.env.MAIL_USER,
-    to: email,
-    subject: 'Contact ImmoSup',
-    text: message,
+    to: process.env.RECEIVER_MAIL,
+    subject: 'contact ImmoSup',
+    html: `<p>email: ${email}</p><p>name: ${firstName}</p><p>message: ${message}</p>`,
   };
 
   mailer.sendMail(mail, (err) => {
     if (err) {
-      res.json({
-        status: err,
-      });
+      res.status(400).send(err);
     } else {
-      res.json({
-        status: 'success',
-      });
+      res.status(200).send('success');
     }
   });
 });
