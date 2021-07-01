@@ -15,7 +15,6 @@ favoritesRouter.get('/', async (req, res) => {
   }
 });
 
-/*
 favoritesRouter.get('/:id', async (req, res) => {
   try {
     const [fav] = await favorite.getFav(req.params.id);
@@ -30,6 +29,5 @@ favoritesRouter.get('/:id', async (req, res) => {
     console.log(err);
   }
 });
-*/
 
 module.exports = favoritesRouter;
