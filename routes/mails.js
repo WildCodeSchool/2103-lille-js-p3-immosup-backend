@@ -5,9 +5,9 @@ mailsRouters.post('/', (req, res) => {
   const { email, message } = req.body;
 
   const mail = {
-    from: 'wild.test@outlook.fr',
-    to: email /* email du recepteur */,
-    subject: '',
+    from: process.env.MAIL_USER,
+    to: email,
+    subject: 'Contact ImmoSup',
     text: message,
   };
 
