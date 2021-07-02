@@ -1,5 +1,4 @@
 const annonceRouter = require('express').Router();
-const db = require('../conf');
 const Ann = require('../models/annonce');
 
 annonceRouter.get('/', async (req, res) => {
@@ -41,7 +40,7 @@ annonceRouter.post('/', async (req, res) => {
 
 annonceRouter.put('/:id', async (req, res) => {
   try {
-    const [[existingAnn]] = await Ann.getOneId(req.params.id);
+    const [[existingAnn]] = await Ann.getOne(req.params.id);
     if (!existingAnn) {
       res.status(400).json('annonce not found');
     } else {
@@ -64,11 +63,8 @@ annonceRouter.put('/:id', async (req, res) => {
 });
 
 annonceRouter.delete('/:id', async (req, res) => {
-  const { id } = req.params;
-  const sqlValues = [id];
-  const sql = 'DELETE FROM accomodations WHERE id = ?';
   try {
-    const [results] = await db.query(sql, sqlValues);
+    const [results] = await Ann.destroy(req.params.id);
     if (!results) {
       res.status(404).send(`Accomodation not found`);
     } else {

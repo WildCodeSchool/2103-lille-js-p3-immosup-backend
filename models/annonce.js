@@ -1,16 +1,9 @@
-const db = require('../conf');
+const { db } = require('../conf');
 
 const getAll = () => {
   const sql =
     'SELECT district, address, city, furnished, rent, surface, animals, title, ges, property, energyClass, rooms, description, idUser FROM accomodations';
   return db.query(sql);
-};
-
-const getOneId = (id) => {
-  return db.query(
-    'SELECT district, address, city, furnished, rent, surface, animals, title, ges, property, energyClass, rooms, description, idUser FROM accomodations WHERE id = ?',
-    [id]
-  );
 };
 
 const getOne = (id) => {
@@ -61,10 +54,15 @@ const update = (id, newAttributes) => {
   return db.query(sql, [newAttributes, id]);
 };
 
+const destroy = (id) => {
+  const sql = 'DELETE FROM accomodations WHERE id = ?';
+  return db.query(sql, [id]);
+};
+
 module.exports = {
   getOne,
   getAll,
   create,
   update,
-  getOneId,
+  destroy,
 };
