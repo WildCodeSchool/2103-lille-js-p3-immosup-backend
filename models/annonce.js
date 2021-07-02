@@ -1,17 +1,22 @@
 const db = require('../conf');
 
 const getAll = () => {
-  const sql = 'SELECT * FROM accomodations';
+  const sql =
+    'SELECT district, address, city, furnished, rent, surface, animals, title, ges, property, energyClass, rooms, description, idUser FROM accomodations';
   return db.query(sql);
 };
 
 const getOneId = (id) => {
-  return db.query('SELECT * FROM accomodations WHERE id = ?', [id]);
+  return db.query(
+    'SELECT district, address, city, furnished, rent, surface, animals, title, ges, property, energyClass, rooms, description, idUser FROM accomodations WHERE id = ?',
+    [id]
+  );
 };
 
 const getOne = (id) => {
   const sqlValues = [id];
-  const sql = 'SELECT * FROM accomodations WHERE id = ?';
+  const sql =
+    'SELECT district, address, city, furnished, rent, surface, animals, title, ges, property, energyClass, rooms, description, idUser FROM accomodations WHERE id = ?';
   return db.query(sql, sqlValues);
 };
 
