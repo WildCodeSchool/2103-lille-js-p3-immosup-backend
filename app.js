@@ -8,7 +8,6 @@ const port = process.env.PORT || 5002;
 
 app.use(express.json());
 app.use(cors());
-
 setupRoutes(app);
 app.use(passport.initialize());
 

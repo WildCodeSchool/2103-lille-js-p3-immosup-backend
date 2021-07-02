@@ -1,5 +1,6 @@
 require('dotenv').config();
 const mysql = require('mysql2/promise');
+const nodemailer = require('nodemailer');
 
 const { JWT_SALTROUNDS, JWT_SECRET } = process.env;
 
@@ -11,8 +12,19 @@ const db = mysql.createPool({
   database: process.env.DB_NAME,
 });
 
+const transporter = nodemailer.createTransport({
+  service: process.env.MAIL_SERVICE,
+  port: 587,
+  secure: false,
+  auth: {
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS,
+  },
+});
+
 module.exports = {
   db,
+  mailer: transporter,
   jwtRounds: parseInt(JWT_SALTROUNDS, 10),
   jwtSecret: JWT_SECRET,
 };
