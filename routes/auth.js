@@ -14,6 +14,7 @@ class AuthError extends Error {
 }
 
 authRouter.post('/signup', async (req, res) => {
+  // Verification password have 1 or more lowercase, uppercase, special char, number & length >= 8
   const passwordRegex = new RegExp(
     '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[=/!@#$%^&*])(?=.{8,})'
   );
