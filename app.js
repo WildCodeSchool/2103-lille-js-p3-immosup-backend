@@ -3,7 +3,6 @@ const cors = require('cors');
 const { setupRoutes } = require('./routes');
 
 const app = express();
-
 const port = process.env.PORT || 5050;
 
 app.use(express.json());
