@@ -8,24 +8,20 @@ const { db, jwtSecret } = require('./conf');
 passport.use(
   new LocalStrategy(
     {
-      usernameField: 'mail',
+      usernameField: 'email',
       passwordField: 'password',
     },
     async (formMail, formPassword, done) => {
       try {
-        const [sqlRes] = await db.query(
-          `SELECT id, mail, firstname, lastname, password FROM user WHERE mail=?`,
+        const [[user]] = await db.query(
+          'SELECT id, name, firstname, email, password, credits, city, gender, budget, age, animals, aboutme, hobbies, telephone FROM users WHERE email = ?',
           [formMail]
         );
-        if (!sqlRes.length) return done(null, false);
-        const { id, mail, firstname, lastname, password } = sqlRes[0];
-        const isPasswordOK = bcrypt.compareSync(formPassword, password);
-        if (!isPasswordOK) return done(null, false, 'Wrong password!');
-
-        const user = { id, mail, firstname, lastname };
-        return done(null, user);
+        if (!user || !bcrypt.compareSync(formPassword, user.password))
+          return done(null, false, 'Bad email or password');
+        delete user.password;
+        return done(null, { ...user });
       } catch (e) {
-        console.log(e);
         return done(e);
       }
     }
@@ -45,10 +41,10 @@ passport.use(
   )
 );
 
-passport.serializeUser(function (user, done) {
+passport.serializeUser((user, done) => {
   done(null, user);
 });
 
-passport.deserializeUser(function (user, done) {
+passport.deserializeUser((user, done) => {
   done(null, user);
 });
