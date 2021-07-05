@@ -2,7 +2,7 @@ const db = require('../conf');
 
 const getFav = (id) => {
   const sql = `
-  select accomodations.*, (
+  select district, address, city, furnished, rent, surface, animals, title, idUser, rooms, energyClass, property from accomodations (
 		select url from photos where idAccomodation=accomodations.id limit 1
 	) as url
 from 
