@@ -4,14 +4,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Users = require('../models/users');
 const { jwtRounds, jwtSecret } = require('../conf');
+const { CustomError } = require('../utilities');
 require('../passport-strategies');
-
-class AuthError extends Error {
-  constructor(message, code) {
-    super(message);
-    this.code = code;
-  }
-}
 
 authRouter.post('/signup', async (req, res) => {
   // Verification password have 1 or more lowercase, uppercase, special char, number & length >= 8
@@ -21,9 +15,10 @@ authRouter.post('/signup', async (req, res) => {
   const user = req.body;
 
   try {
-    if (!user.password) throw new AuthError('No password', 'ER_BAD_NULL_ERROR');
+    if (!user.password)
+      throw new CustomError('No password', 'ER_BAD_NULL_ERROR');
     if (!passwordRegex.test(user.password))
-      throw new AuthError('Bad password', 'ER_BAD_PASS');
+      throw new CustomError('Bad password', 'ER_BAD_PASS');
     user.password = bcrypt.hashSync(user.password, jwtRounds);
     const [postResults] = await Users.create(user);
     delete user.password;
@@ -34,11 +29,12 @@ authRouter.post('/signup', async (req, res) => {
       token,
     });
   } catch (err) {
-    console.log(err);
     if (err.code === 'ER_DUP_ENTRY') {
       res.status(409).send('This user already exists');
     } else if (err.code === 'ER_BAD_NULL_ERROR') {
       res.status(422).send('Please fill all fields');
+    } else if (err.code === 'ER_BAD_FIELD_ERROR') {
+      res.status(422).send(err.sqlMessage);
     } else if (err.code === 'ER_BAD_PASS') {
       res.status(422).send('Please enter a valid password');
     } else {
