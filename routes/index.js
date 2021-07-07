@@ -1,12 +1,13 @@
 const annonceRouter = require('./annonce');
+const mailsRouters = require('./mails');
 const usersRouter = require('./users');
-const favoritesRouter = require('./favorites');
+const authRouter = require('./auth');
 
 const setupRoutes = (app) => {
-  app.use('/api/annonce', annonceRouter);
-
-  app.use('/api/users', usersRouter);
-  app.use('/api/favorites', favoritesRouter);
+  app.use('/access', mailsRouters);
+  app.use('/annonce', annonceRouter);
+  app.use('/auth', authRouter);
+  app.use('/users', usersRouter);
 };
 
 module.exports = {
