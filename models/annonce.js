@@ -15,8 +15,15 @@ const getAll = async () => {
 
 const getOne = (id) => {
   const sqlValues = [id];
-  const sql =
-    'SELECT district, address, city, furnished, rent, surface, animals, title, ges, property, energyClass, rooms, description, idUser FROM accomodations WHERE id = ?';
+  const sql = `
+  SELECT 
+    district, address, city, furnished, rent, surface, animals, title, ges, property, energyClass, rooms, description, accomodations.idUser, 
+    group_concat(url) as photos
+  FROM 
+    accomodations
+    LEFT JOIN photos ON idAccomodation=accomodations.id
+  WHERE accomodations.id=?
+  GROUP BY accomodations.id`;
   return db.query(sql, sqlValues);
 };
 
