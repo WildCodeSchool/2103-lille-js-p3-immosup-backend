@@ -1,9 +1,16 @@
 const { db } = require('../conf');
 
-const getAll = () => {
-  const sql =
-    'SELECT district, address, city, furnished, rent, surface, animals, title, ges, property, energyClass, rooms, description, idUser FROM accomodations';
-  return db.query(sql);
+const getAll = async () => {
+  const sql = `
+  SELECT 
+    district, address, city, furnished, rent, surface, animals, title, ges, property, energyClass, rooms, description, accomodations.idUser, 
+    group_concat(url) as photos
+  FROM 
+    accomodations
+    LEFT JOIN photos ON idAccomodation=accomodations.id
+  GROUP BY accomodations.id`;
+  const annonces = await db.query(sql);
+  return annonces;
 };
 
 const getOne = (id) => {
