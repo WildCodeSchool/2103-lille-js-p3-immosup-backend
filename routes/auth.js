@@ -29,6 +29,7 @@ authRouter.post('/signup', async (req, res) => {
       token,
     });
   } catch (err) {
+    console.log(err);
     if (err.code === 'ER_DUP_ENTRY') {
       res.status(409).send('This user already exists');
     } else if (err.code === 'ER_BAD_NULL_ERROR') {
