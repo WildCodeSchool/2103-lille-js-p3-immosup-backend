@@ -1,4 +1,5 @@
 const usersRouter = require('express').Router();
+const passport = require('passport');
 const User = require('../models/users');
 const { CustomError } = require('../utilities');
 
@@ -47,7 +48,7 @@ usersRouter.get('/email/:email', async (req, res) => {
   }
 });
 
-usersRouter.put('/:id', async (req, res) => {
+usersRouter.put('/:id', passport.authenticate('jwt'), async (req, res) => {
   try {
     const [[existingUser]] = await User.getOneId(req.params.id);
     if (!existingUser) {

@@ -23,13 +23,6 @@ const getAll = () => {
   return db.query(sql);
 };
 
-const create = (user) => {
-  const sql = `INSERT INTO users
-              SET ?`;
-
-  return db.query(sql, user);
-};
-
 const update = (id, newAttributes) => {
   const sql = `UPDATE users
               SET ?
@@ -42,6 +35,5 @@ module.exports = {
   getOneId,
   getOneEmail,
   getAll,
-  create,
   update,
 };
