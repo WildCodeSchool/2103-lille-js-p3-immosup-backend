@@ -15,7 +15,7 @@ passport.use(
       try {
         const [[user]] = await db.query(
           `SELECT 
-            id, lastname, firstname, email, password, credits, city, gender, budget, birthday, animals, aboutme, hobbies, phone, avatar_url 
+            id, lastname, firstname, email, password, credits, city, gender, budget, birthday, animals, aboutme, hobbies, phone, avatarUrl 
           FROM 
             users 
           WHERE 
