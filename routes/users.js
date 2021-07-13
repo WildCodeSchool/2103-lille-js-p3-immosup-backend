@@ -1,20 +1,49 @@
 const usersRouter = require('express').Router();
 const User = require('../models/users');
+const { CustomError } = require('../utilities');
 
 usersRouter.get('/', async (req, res) => {
   try {
-    let result = null;
-    if (req.query.id) {
-      [[result]] = await User.getOneId(req.query.id);
-    } else if (req.query.email) {
-      [[result]] = await User.getOneEmail(req.query.email);
-    } else {
-      [result] = await User.getAll();
-    }
-    if (!result) res.status(404).send('User(s) not found');
-    else res.status(200).send(result);
+    const [users] = await User.getAll();
+
+    if (!users.length) throw new CustomError('Users not found', 'ER_NO_USERS');
+    res.status(200).json(users);
   } catch (err) {
-    res.status(500).send('Error retrieving user(s) from database');
+    if (err.code === 'ER_NO_USERS') {
+      res.status(404).send(err.message);
+    } else {
+      res.status(500).send('Error retrieving user(s) from database');
+    }
+  }
+});
+
+usersRouter.get('/id/:id', async (req, res) => {
+  try {
+    const [[user]] = await User.getOneId(req.params.id);
+
+    if (!user) throw new CustomError('User not found', 'ER_NO_USER');
+    res.status(200).json(user);
+  } catch (err) {
+    if (err.code === 'ER_NO_USER') {
+      res.status(404).send(err.message);
+    } else {
+      res.status(500).send('Error retrieving user from database');
+    }
+  }
+});
+
+usersRouter.get('/email/:email', async (req, res) => {
+  try {
+    const [[user]] = await User.getOneEmail(req.params.email);
+
+    if (!user) throw new CustomError('User not found', 'ER_NO_USER');
+    res.status(200).json(user);
+  } catch (err) {
+    if (err.code === 'ER_NO_USER') {
+      res.status(404).send(err.message);
+    } else {
+      res.status(500).send('Error retrieving user from database');
+    }
   }
 });
 
@@ -30,6 +59,8 @@ usersRouter.post('/', async (req, res) => {
       res.status(409).send('This user already exists');
     } else if (err.code === 'ER_BAD_NULL_ERROR') {
       res.status(422).send('Please fill all fields');
+    } else if (err.code === 'ER_BAD_FIELD_ERROR') {
+      res.status(422).send(err.sqlMessage);
     } else {
       res.status(500).send('Error creating user from database');
     }
