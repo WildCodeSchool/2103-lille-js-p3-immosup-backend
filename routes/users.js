@@ -1,4 +1,5 @@
 const usersRouter = require('express').Router();
+const passport = require('passport');
 const User = require('../models/users');
 const { CustomError } = require('../utilities');
 
@@ -47,27 +48,7 @@ usersRouter.get('/email/:email', async (req, res) => {
   }
 });
 
-usersRouter.post('/', async (req, res) => {
-  try {
-    const [result] = await User.create(req.body);
-    res.status(201).send({
-      id: result.insertId,
-      ...req.body,
-    });
-  } catch (err) {
-    if (err.code === 'ER_DUP_ENTRY') {
-      res.status(409).send('This user already exists');
-    } else if (err.code === 'ER_BAD_NULL_ERROR') {
-      res.status(422).send('Please fill all fields');
-    } else if (err.code === 'ER_BAD_FIELD_ERROR') {
-      res.status(422).send(err.sqlMessage);
-    } else {
-      res.status(500).send('Error creating user from database');
-    }
-  }
-});
-
-usersRouter.put('/:id', async (req, res) => {
+usersRouter.put('/:id', passport.authenticate('jwt'), async (req, res) => {
   try {
     const [[existingUser]] = await User.getOneId(req.params.id);
     if (!existingUser) {

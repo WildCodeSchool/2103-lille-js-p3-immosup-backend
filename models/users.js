@@ -1,7 +1,7 @@
 const { db } = require('../conf');
 
 const getOneId = (id) => {
-  const sql = `SELECT id, lastname, firstname, email, credits, city, gender, budget, birthday, animals, aboutme, hobbies, phone, avatar_url
+  const sql = `SELECT id, lastname, firstname, email, credits, city, gender, budget, birthday, animals, aboutme, hobbies, phone, avatarUrl
               FROM users
               WHERE id = ?`;
 
@@ -9,7 +9,7 @@ const getOneId = (id) => {
 };
 
 const getOneEmail = (email) => {
-  const sql = `SELECT id, lastname, firstname, email, credits, city, gender, budget, birthday, animals, aboutme, hobbies, phone, avatar_url
+  const sql = `SELECT id, lastname, firstname, email, credits, city, gender, budget, birthday, animals, aboutme, hobbies, phone, avatarUrl
               FROM users
               WHERE email = ?`;
 
@@ -17,7 +17,7 @@ const getOneEmail = (email) => {
 };
 
 const getAll = () => {
-  const sql = `SELECT id, lastname, firstname, email, credits, city, gender, budget, birthday, animals, aboutme, hobbies, phone, avatar_url
+  const sql = `SELECT id, lastname, firstname, email, credits, city, gender, budget, birthday, animals, aboutme, hobbies, phone, avatarUrl
               FROM users`;
 
   return db.query(sql);
