@@ -3,6 +3,7 @@ const mailsRouters = require('./mails');
 const usersRouter = require('./users');
 const favoritesRouter = require('./favorites');
 const authRouter = require('./auth');
+const uploadRouter = require('./upload');
 
 const setupRoutes = (app) => {
   app.use('/access', mailsRouters);
@@ -10,6 +11,7 @@ const setupRoutes = (app) => {
   app.use('/auth', authRouter);
   app.use('/users', usersRouter);
   app.use('/favorites', favoritesRouter);
+  app.use('/files', uploadRouter);
 };
 
 module.exports = {
