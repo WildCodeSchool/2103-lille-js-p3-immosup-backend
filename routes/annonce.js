@@ -1,5 +1,4 @@
 const annonceRouter = require('express').Router();
-const db = require('../conf');
 const Ann = require('../models/annonce');
 
 annonceRouter.get('/', async (req, res) => {
@@ -22,44 +21,50 @@ annonceRouter.get('/:id', async (req, res) => {
 });
 
 annonceRouter.post('/', async (req, res) => {
-  const error = Ann.validateCreation(req.body);
-  if (error) {
-    res.status(422).json({ validationErrors: error.details });
-  } else {
-    try {
-      const [results] = await Ann.create(req.body);
-      res.status(201).json({
-        id: results.insertId,
-        ...req.body,
-      });
-    } catch (err) {
-      res.status(500).send(err);
+  try {
+    const [result] = await Ann.create(req.body);
+    res.status(201).send({
+      id: result.insertId,
+      ...req.body,
+    });
+  } catch (err) {
+    if (err.code === 'ER_DUP_ENTRY') {
+      res.status(409).send('');
+    } else if (err.code === 'ER_BAD_NULL_ERROR') {
+      res.status(422).send('');
+    } else {
+      res.status(500).send('Error creating annonce from database');
     }
   }
 });
 
 annonceRouter.put('/:id', async (req, res) => {
-  const { id } = req.params;
-  const error = Ann.validateUpdate(req.body);
-  if (error) {
-    res.status(422).json({ validationErrors: error.details });
-  } else {
-    try {
-      const [[existingUser]] = await Ann.getOne(id);
+  try {
+    const [[existingAnn]] = await Ann.getOne(req.params.id);
+    if (!existingAnn) {
+      res.status(400).json('annonce not found');
+    } else {
       await Ann.update(req.params.id, req.body);
-      res.json({ ...existingUser, ...req.body });
-    } catch (err) {
-      res.status(400).send(err);
+      res.status(200).send({
+        ...existingAnn,
+        ...req.body,
+      });
+    }
+  } catch (err) {
+    if (
+      err.code === 'ER_BAD_FIELD_ERROR' ||
+      err.code === 'ER_TRUNCATED_WRONG_VALUE_FOR_FIELD'
+    ) {
+      res.status(422).send(err.sqlMessage);
+    } else {
+      res.status(500).send('Error updating annonce from database');
     }
   }
 });
 
 annonceRouter.delete('/:id', async (req, res) => {
-  const { id } = req.params;
-  const sqlValues = [id];
-  const sql = 'DELETE FROM accomodations WHERE id = ?';
   try {
-    const [results] = await db.query(sql, sqlValues);
+    const [results] = await Ann.destroy(req.params.id);
     if (!results) {
       res.status(404).send(`Accomodation not found`);
     } else {

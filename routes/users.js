@@ -1,48 +1,73 @@
 const usersRouter = require('express').Router();
+const passport = require('passport');
 const User = require('../models/users');
+const { CustomError } = require('../utilities');
 
-usersRouter.get('/:id', async (req, res) => {
+usersRouter.get('/', async (req, res) => {
   try {
-    const [[user]] = await User.getOne(req.params.id);
+    const [users] = await User.getAll();
 
-    if (!user) {
-      res.status(404).send(`User ${req.params.id} not found`);
-    } else {
-      res.status(200).json(user);
-    }
+    if (!users.length) throw new CustomError('Users not found', 'ER_NO_USERS');
+    res.status(200).json(users);
   } catch (err) {
-    res.status(500).send('Error retrieving users from database');
+    if (err.code === 'ER_NO_USERS') {
+      res.status(404).send(err.message);
+    } else {
+      res.status(500).send('Error retrieving user(s) from database');
+    }
   }
 });
 
-usersRouter.post('/', async (req, res) => {
-  const error = User.validateCreation(req.body);
-  if (error) {
-    res.status(422).json({ validationErrors: error.details });
-  } else {
-    try {
-      const [result] = await User.create(req.body);
-      res.status(201).json({
-        id: result.insertId,
+usersRouter.get('/id/:id', async (req, res) => {
+  try {
+    const [[user]] = await User.getOneId(req.params.id);
+
+    if (!user) throw new CustomError('User not found', 'ER_NO_USER');
+    res.status(200).json(user);
+  } catch (err) {
+    if (err.code === 'ER_NO_USER') {
+      res.status(404).send(err.message);
+    } else {
+      res.status(500).send('Error retrieving user from database');
+    }
+  }
+});
+
+usersRouter.get('/email/:email', async (req, res) => {
+  try {
+    const [[user]] = await User.getOneEmail(req.params.email);
+
+    if (!user) throw new CustomError('User not found', 'ER_NO_USER');
+    res.status(200).json(user);
+  } catch (err) {
+    if (err.code === 'ER_NO_USER') {
+      res.status(404).send(err.message);
+    } else {
+      res.status(500).send('Error retrieving user from database');
+    }
+  }
+});
+
+usersRouter.put('/:id', passport.authenticate('jwt'), async (req, res) => {
+  try {
+    const [[existingUser]] = await User.getOneId(req.params.id);
+    if (!existingUser) {
+      res.status(404).send('User not found');
+    } else {
+      await User.update(req.params.id, req.body);
+      res.status(200).send({
+        ...existingUser,
         ...req.body,
       });
-    } catch (err) {
-      res.status(500).send(err);
     }
-  }
-});
-
-usersRouter.put('/:id', async (req, res) => {
-  const error = User.validateUpdate(req.body);
-  if (error) {
-    res.status(422).json({ validationErrors: error.details });
-  } else {
-    try {
-      const [[existingUser]] = await User.getOne(req.params.id);
-      await User.update(req.params.id, req.body);
-      res.json({ ...existingUser, ...req.body });
-    } catch (err) {
-      res.status(400).send(err);
+  } catch (err) {
+    if (
+      err.code === 'ER_BAD_FIELD_ERROR' ||
+      err.code === 'ER_TRUNCATED_WRONG_VALUE_FOR_FIELD'
+    ) {
+      res.status(422).send(err.sqlMessage);
+    } else {
+      res.status(500).send('Error updating user from database');
     }
   }
 });
