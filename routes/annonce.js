@@ -75,4 +75,18 @@ annonceRouter.delete('/:id', async (req, res) => {
   }
 });
 
+annonceRouter.get('/landlord/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [results] = await Ann.getOneLandlord(id);
+    if (!results) {
+      res.status(404).send(`Accomodation ${id} not found`);
+    } else {
+      res.status(200).json(results);
+    }
+  } catch (err) {
+    res.status(500).send('Error retrieving accomodations from database');
+  }
+});
+
 module.exports = annonceRouter;
