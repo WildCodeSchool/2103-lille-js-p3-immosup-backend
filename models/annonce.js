@@ -13,6 +13,13 @@ const getOne = (id) => {
   return db.query(sql, sqlValues);
 };
 
+const getOneLandlord = (id) => {
+  const sqlValues = [id];
+  const sql =
+    'SELECT district, address, city, furnished, rent, surface, animals, title, ges, property, energyClass, rooms, description, idUser FROM accomodations WHERE idUser = ?';
+  return db.query(sql, sqlValues);
+};
+
 const create = ({
   district,
   address,
@@ -65,4 +72,5 @@ module.exports = {
   create,
   update,
   destroy,
+  getOneLandlord,
 };
