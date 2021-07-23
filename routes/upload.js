@@ -10,11 +10,12 @@ uploadRouter.use(express.static('pictures'));
 
 uploadRouter.use(upload());
 uploadRouter.post('/', (req, res) => {
+  const { idUser, idAccomodation } = req.query;
   const fileName = `pictures/${uuidv4()}.jpeg`;
   fs.writeFile(fileName, req.files.image.data, () => {
     db.query(
       'INSERT INTO photos (url, idUser , idAccomodation) VALUES (?, ?, ?)',
-      [fileName, 8, null]
+      [fileName, idUser, idAccomodation]
     );
     res.send('yay');
   });
